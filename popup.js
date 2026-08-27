@@ -176,13 +176,10 @@ async function ensureParentExists(parentId) {
   try {
     const [node] = await getBookmarkById(parentId);
 
-    // Kalau tempat asalnya folder lama "bookmark-hidden",
-    // kembalikan ke Bookmarks Bar saja
     if (node && node.title === LEGACY_FOLDER_NAME) return "1";
 
     return parentId;
   } catch {
-    // Folder induk sudah tidak ada, fallback ke Bookmarks Bar
     return "1";
   }
 }
@@ -241,8 +238,6 @@ async function unhideAll() {
 
 /* ---------- Backup: bertahan walau ekstensi dicopot ---------- */
 
-/* ---------- Backup: bertahan walau ekstensi dicopot ---------- */
-
 async function saveBackupFile(saveAs = false) {
   const { hiddenItems } = await storageGet();
 
@@ -257,7 +252,6 @@ async function saveBackupFile(saveAs = false) {
     2
   );
 
-  // Gunakan Blob dan Object URL (standar web modern, lebih stabil dari data: URL)
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
@@ -271,7 +265,6 @@ async function saveBackupFile(saveAs = false) {
           conflictAction: "overwrite"
         },
         (downloadId) => {
-          // Bersihkan URL dari memory setelah download dimulai
           setTimeout(() => URL.revokeObjectURL(url), 2000);
           
           if (chrome.runtime.lastError) {
@@ -282,7 +275,6 @@ async function saveBackupFile(saveAs = false) {
       );
     });
   } catch (err) {
-    // Lempar error agar bisa ditangkap oleh tombol Ekspor
     throw new Error(err.message || "Gagal memicu download.");
   }
 }
@@ -308,7 +300,7 @@ async function importBackupFile(file) {
 
   for (const item of items) {
     if (!item || !item.title) continue;
-    if (item.key && existingKeys.has(item.key)) continue; // cegah duplikat
+    if (item.key && existingKeys.has(item.key)) continue;
     if (!item.key) {
       item.key = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     }
@@ -418,7 +410,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const target = matches[0];
           await hideNode(target);
 
-          // Hapus dari candidates agar tidak diproses 2x
           const idx = candidates.findIndex((c) => c.id === target.id);
           if (idx !== -1) candidates.splice(idx, 1);
 
@@ -473,7 +464,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (success.length > 0) {
         namesTextarea.value = "";
         namesTextarea.focus();
-        await saveBackupFile();
+        // Auto backup (tidak memblokir UI jika user cancel dialog save)
+        saveBackupFile().catch(err => console.warn("Auto-backup gagal:", err.message));
       }
 
       await loadHiddenList();
@@ -491,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = await unhideItem(btn.dataset.key);
       setStatus(`"${escapeHtml(item.title)}" dikembalikan ke tempat semula.`);
       await loadHiddenList();
-      await saveBackupFile();
+      // (Sudah dihapus: await saveBackupFile())
     } catch (error) {
       setStatus(escapeHtml(error.message), true);
     }
@@ -503,19 +495,17 @@ document.addEventListener("DOMContentLoaded", () => {
       await unhideAll();
       setStatus("Semua bookmark dikembalikan.");
       await loadHiddenList();
-      await saveBackupFile();
     } catch (error) {
       setStatus(escapeHtml(error.message), true);
     }
   });
 
   /* ----- Backup: ekspor & impor ----- */
-    exportButton.addEventListener("click", async () => {
+  exportButton.addEventListener("click", async () => {
     try {
       await saveBackupFile(true);
       setStatus("✅ Backup berhasil diekspor ke folder Downloads.");
     } catch (error) {
-      // Pesan error yang jelas kalau permission downloads belum aktif
       setStatus("Gagal ekspor: " + error.message + " (Pastikan izin 'downloads' ada di manifest.json & ekstensi sudah di-reload)", true);
     }
   });
@@ -529,7 +519,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const added = await importBackupFile(file);
       await loadHiddenList();
-      await saveBackupFile();
+      await saveBackupFile(); // Backup otomatis setelah impor (masuk akal)
       setStatus(`Backup dimuat: ${added} item ditambahkan ke daftar tersembunyi.`);
     } catch (error) {
       setStatus(escapeHtml(error.message), true);
