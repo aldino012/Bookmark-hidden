@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Kalau nanti pakai build tools
+node_modules/
+dist/

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bookmark Hidden</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Bookmark Hidden</h1>
+
+  <form id="hide-form">
+    <label for="names">Nama bookmark / folder (satu per baris)</label>
+    <textarea
+      id="names"
+      placeholder="Gmail&#10;YouTube&#10;Kuliah&#10;Web Sekolah&#10;Web DPD&#10;e-Kusioner"
+      rows="6"
+      required
+    ></textarea>
+    <button type="submit">Sembunyikan Semua</button>
+  </form>
+
+  <div id="status" role="status"></div>
+
+  <div class="toolbar">
+    <h2>Bookmark tersembunyi</h2>
+    <div class="actions">
+      <button id="unhide-all" type="button">Unhide Semua</button>
+      <button id="refresh" type="button">Refresh</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <h2>Backup</h2>
+    <div class="actions">
+      <button id="export-backup" type="button">Ekspor</button>
+      <button id="import-backup" type="button">Impor</button>
+      <input
+        type="file"
+        id="backup-file"
+        accept=".json,application/json"
+        hidden
+      />
+    </div>
+  </div>
+
+  <ul id="list"></ul>
+
+  <script src="popup.js"></script>
+</body>
+</html>
