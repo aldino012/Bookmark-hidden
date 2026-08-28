@@ -2,12 +2,67 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bookmark Hidden</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Bookmark Hidden</h1>
+  <!-- Modal Setup/Login PIN -->
+  <div id="pin-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2 id="pin-modal-title">Buat PIN Baru</h2>
+      <p id="pin-modal-desc" class="modal-desc">
+        PIN digunakan untuk melindungi daftar bookmark tersembunyi Anda. Minimal 4 digit.
+      </p>
+      <input
+        type="password"
+        id="pin-input"
+        placeholder="Masukkan PIN"
+        inputmode="numeric"
+        autocomplete="off"
+      />
+      <input
+        type="password"
+        id="pin-confirm"
+        placeholder="Konfirmasi PIN"
+        inputmode="numeric"
+        autocomplete="off"
+        class="hidden"
+      />
+      <div id="pin-error" class="pin-error hidden"></div>
+      <div class="modal-actions">
+        <button id="pin-submit" type="button">Simpan PIN</button>
+        <button id="pin-reset" type="button" class="btn-danger hidden">
+          Lupa PIN? Hapus Semua Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Verifikasi PIN -->
+  <div id="verify-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2>Masukkan PIN</h2>
+      <p class="modal-desc" id="verify-desc">
+        Verifikasi identitas Anda untuk melanjutkan.
+      </p>
+      <input
+        type="password"
+        id="verify-input"
+        placeholder="PIN Anda"
+        inputmode="numeric"
+        autocomplete="off"
+      />
+      <div id="verify-error" class="pin-error hidden"></div>
+      <div class="modal-actions">
+        <button id="verify-submit" type="button">Lanjutkan</button>
+        <button id="verify-cancel" type="button" class="btn-secondary">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Konten Utama -->
+  <h1>Bookmark Hidden 🔒</h1>
 
   <form id="hide-form">
     <label for="names">Nama bookmark / folder (satu per baris)</label>
@@ -41,6 +96,14 @@
         accept=".json,application/json"
         hidden
       />
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <h2>Keamanan</h2>
+    <div class="actions">
+      <button id="change-pin" type="button">Ubah PIN</button>
+      <button id="lock-btn" type="button" class="btn-danger">Kunci</button>
     </div>
   </div>
 
